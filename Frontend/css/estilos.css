@@ -1,85 +1,54 @@
+/* Estilos Base */
 body {
-    font-family: Arial, sans-serif;
-    line-height: 1.6;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f0f2f5;
     color: #333;
-    margin: 20px;
-    background-color: #f4f4f4;
+    display: flex;
+    justify-content: center;
+    padding-top: 50px;
 }
 
 .container {
-    background: #fff;
-    padding: 20px;
-    margin-bottom: 20px;
-    border-radius: 5px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-}
-
-h1,
-h2 {
-    margin-top: 0;
-}
-
-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 15px;
-}
-
-/* Tablas */
-table {
+    background-color: white;
+    padding: 30px;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
     width: 100%;
-    border-collapse: collapse;
+    max-width: 500px;
 }
 
-table,
-th,
-td {
-    border: 1px solid #ddd;
-}
-
-th,
-td {
-    padding: 12px;
-    text-align: left;
-}
-
-th {
-    background-color: #eee;
+h1, h2 {
+    color: #1a73e8;
+    text-align: center;
 }
 
 /* Formularios */
 form {
     display: flex;
     flex-direction: column;
+    gap: 15px;
 }
 
 label {
-    margin-top: 10px;
     font-weight: bold;
+    font-size: 0.9em;
 }
 
-input,
-textarea,
-select {
-    padding: 8px;
-    margin-top: 5px;
+input, select, textarea {
+    padding: 10px;
     border: 1px solid #ccc;
     border-radius: 4px;
+    font-size: 1em;
 }
 
 /* Botones */
-.botones {
-    margin-top: 15px;
-    display: flex;
-    gap: 10px;
-}
-
 button {
-    padding: 10px 15px;
-    cursor: pointer;
+    padding: 12px;
     border: none;
     border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: background 0.3s;
 }
 
 .btn-guardar {
@@ -87,14 +56,28 @@ button {
     color: white;
 }
 
+.btn-guardar:hover {
+    background-color: #218838;
+}
+
 .btn-cancelar {
     background-color: #dc3545;
     color: white;
 }
 
-hr {
-    border: 0;
-    height: 1px;
-    background: #ccc;
-    margin: 40px 0;
+/* Tablas (para el Dashboard) */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+th, td {
+    padding: 12px;
+    border-bottom: 1px solid #ddd;
+    text-align: left;
+}
+
+th {
+    background-color: #f8f9fa;
 }
