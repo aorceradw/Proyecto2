@@ -39,6 +39,8 @@ body {
     color: #f87171;
     text-decoration: none;
     font-weight: bold;
+    /* Preparar para animación */
+    transition: all 0.3s ease;
 }
 
 /* TARJETA DASHBOARD */
@@ -98,10 +100,6 @@ body {
     margin-bottom: 25px;
 }
 
-.card-header h1 {
-    color: var(--bg-dark);
-}
-
 .brand {
     display: flex;
     align-items: center;
@@ -126,6 +124,10 @@ body {
     border-radius: 8px;
     font-weight: bold;
     cursor: pointer;
+    /* Preparar para animación */
+    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    position: relative;
+    overflow: hidden;
 }
 
 /* BUSCADOR Y FILTROS */
@@ -153,6 +155,7 @@ body {
     border: 1px solid var(--border);
     border-radius: 8px;
     box-sizing: border-box;
+    transition: all 0.3s ease;
 }
 
 .filter-select {
@@ -160,6 +163,18 @@ body {
     border: 1px solid var(--border);
     border-radius: 8px;
     color: var(--text-gray);
+    background-color: white;
+    cursor: pointer;
+    width: 100%; /* Para el wrapper */
+    transition: all 0.3s ease;
+}
+
+/* Estilo para el ojo si es un enlace `<a>` */
+a.btn-view {
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
 }
 
 /* TABLA DE DATOS */
@@ -211,6 +226,8 @@ body {
     border-radius: 6px;
     cursor: pointer;
     color: var(--text-gray);
+    /* Preparar para animación */
+    transition: all 0.3s ease;
 }
 
 /* PIE DE TARJETA */
@@ -235,6 +252,8 @@ body {
     border-radius: 6px;
     cursor: pointer;
     font-weight: bold;
+    /* Preparar para animación */
+    transition: all 0.3s ease;
 }
 
 .active {
@@ -249,4 +268,80 @@ body {
     .stat-item { border-right: none; border-bottom: 1px solid var(--border); }
     .search-section { flex-direction: column; }
     .card-header { flex-direction: column; gap: 15px; text-align: center; }
+}
+
+/* =========================================
+   NUEVAS ANIMACIONES AVANZADAS (Antonio)
+   ========================================= */
+
+/* 1. Botón "Salir" (navbar) */
+.exit-button:hover {
+    color: #ef4444; /* Rojo más intenso */
+    transform: translateX(3px); /* Se mueve ligeramente a la derecha */
+}
+
+/* 2. Botón "Nueva Incidencia" (Efecto Ripple/Brillo avanzado) */
+.btn-new:hover {
+    background-color: var(--primary-dark);
+    box-shadow: 0 4px 15px rgba(37, 99, 235, 0.4);
+    transform: translateY(-2px); /* Sube ligeramente */
+}
+
+/* Efecto de brillo al pasar el ratón */
+.btn-new::after {
+    content: '';
+    position: absolute;
+    top: 0; left: -100%;
+    width: 100%; height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+    transition: all 0.5s;
+}
+
+.btn-new:hover::after {
+    left: 100%;
+}
+
+/* 3. Input de Búsqueda (Sombra y borde neón) */
+.search-box input:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1), 0 0 10px rgba(37, 99, 235, 0.2);
+}
+
+/* 4. Selector de Estados (Animación 3D de subida) */
+.status-select-wrapper {
+    position: relative;
+    transition: transform 0.3s ease;
+    perspective: 1000px; /* Para efecto 3D */
+}
+
+.status-select-wrapper:hover {
+    transform: translateY(-3px) rotateX(2deg); /* Sube y se inclina ligeramente */
+}
+
+.filter-select:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+}
+
+/* 5. Botón Ojo (Ver Detalle) */
+.btn-view:hover {
+    border-color: var(--primary);
+    color: var(--primary);
+    background-color: rgba(37, 99, 235, 0.05);
+    transform: scale(1.1); /* Se agranda un poco */
+}
+
+/* 6. Botones de Paginación */
+.page-link:not(.active):hover {
+    border-color: var(--primary);
+    color: var(--primary);
+    background-color: var(--gray-light);
+    transform: translateY(-1px);
+}
+
+.page-link.active:hover {
+    background-color: var(--primary-dark);
+    box-shadow: 0 2px 8px rgba(37, 99, 235, 0.3);
 }
