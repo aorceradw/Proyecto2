@@ -1,4 +1,11 @@
-# models.py
-# PROPÓSITO: Definir cómo son las tablas en la base de datos (AWS RDS).
-# TAREA: Crear las clases para 'Incidencias' y 'Usuarios'.
+from sqlalchemy import Column, Integer, String, Text
+from .database import Base
+
+class Incidencia(Base):
+    __tablename__ = "incidencias"
+
+    id = Column(Integer, primary_key=True, index=True)
+    titulo = Column(String(200), nullable=False)
+    descripcion = Column(Text)
+    prioridad = Column(String(20), default="media")
 
