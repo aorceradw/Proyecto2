@@ -1,0 +1,10 @@
+# requirements.txt
+# PROPÓSITO: Lista de librerías necesarias para que el proyecto funcione.
+# ACCIÓN: No tocar a menos que necesites instalar una librería nueva.
+
+fastapi          # El motor de nuestra API
+uvicorn          # El servidor que arranca FastAPI
+sqlalchemy       # Para hablar con la base de datos de forma profesional
+pymysql          # El "traductor" para conectar con MySQL en AWS
+python-dotenv    # Para leer las claves del archivo .env de forma segura
+pytest           # Para las pruebas que pide la maestra

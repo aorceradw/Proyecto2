@@ -1,0 +1,22 @@
+# docker-compose.yml
+# PROPÓSITO: Orquestar los contenedores de Front y Back.
+# ACCIÓN: Une el servidor Nginx con la API de FastAPI.
+
+version: '3.8'
+
+services:
+  backend:
+    build: ./backend
+    # Tarea: Exponer el puerto 8000 para que el JS pueda hacer peticiones.
+    ports:
+      - "8000:8000"
+    env_file:
+      - .env  # Aquí se leerán las claves de la RDS de Amazon
+
+  frontend:
+    build: ./Frontend
+    # Tarea: Servir los HTML en el puerto 80.
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
