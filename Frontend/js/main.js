@@ -1,11 +1,5 @@
-// ============================================
-// FRONTEND/JS/MAIN.JS - Sistema de Incidencias
-// Código sencillo para aprender JavaScript
-// ============================================
 
-// ============================================
-// 1. FUNCIÓN DE LOGIN - Guardar en localStorage
-// ============================================
+// 1. LOGIN : Guardar en localStorage
 
 function guardarLogin() {
   // Obtener los valores del formulario
@@ -28,13 +22,13 @@ function guardarLogin() {
       let nombreUsuario = cajaUsuario.value;
       let rolSeleccionado = cajaRol.value;
       
-      // Aquí guardamos en localStorage para que no se pierda al cambiar de página
+      // Guardar en localStorage para que no se pierda
       localStorage.setItem('usuarioGuardado', nombreUsuario);
       localStorage.setItem('rolGuardado', rolSeleccionado);
       
-      console.log('✓ Login guardado: ' + nombreUsuario + ' (' + rolSeleccionado + ')');
+      console.log('Login guardado: ' + nombreUsuario);
       
-      // Redirigir al dashboard
+      // Ir al dashboard
       window.location.href = 'pages/dashboard.html';
     });
   }
@@ -78,13 +72,13 @@ function configuraFiltros() {
     selectFiltro.addEventListener('change', function() {
       let estadoSeleccionado = this.value;
       
-      // Mostrar en consola la URL que pediríamos al backend
+      // Mostrar la URL que se pediría al backend
       if (estadoSeleccionado === 'Todos los estados') {
-        console.log('📡 Pidiendo a la API -> /api/incidencias (sin filtros)');
+        console.log('Filtro: /api/incidencias');
       } else if (estadoSeleccionado === 'Abiertas') {
-        console.log('📡 Pidiendo a la API -> /api/incidencias?estado=abierta');
+        console.log('Filtro: /api/incidencias?estado=abierta');
       } else if (estadoSeleccionado === 'Cerradas') {
-        console.log('📡 Pidiendo a la API -> /api/incidencias?estado=cerrada');
+        console.log('Filtro: /api/incidencias?estado=cerrada');
       }
       
       // Aquí iría el fetch real (por ahora solo en consola)
@@ -113,9 +107,9 @@ function configuraBotonesVer() {
       // Remover el # del ID
       let idNumero = idTexto.replace('#', '');
       
-      console.log('👁️ Ver detalle de incidencia: ' + idNumero);
+      console.log('Ir a detalle: ' + idNumero);
       
-      // Redirigir a la página de detalle con el ID
+      // Redirigir a detalle-incidencias con el ID
       window.location.href = 'detalle-incidencias.html?id=' + idNumero;
     });
   });
@@ -137,9 +131,9 @@ function cargarDetalleIncidencia() {
       etiquetaID.textContent = '#' + idIncidencia;
     }
     
-    console.log('📍 Cargando detalle de incidencia ID: ' + idIncidencia);
+    console.log('Cargando ID: ' + idIncidencia);
     
-    // Aquí llamaríamos a obtenerDatos(idIncidencia)
+    // Llamar función para traer datos
     obtenerDatos(idIncidencia);
   }
 }
@@ -150,19 +144,15 @@ function cargarDetalleIncidencia() {
 
 async function obtenerDatos(idIncidencia) {
   try {
-    console.log('🔄 Conectando con la API de AWS RDS...');
-    console.log('📡 GET http://localhost:8000/api/incidencias/' + idIncidencia);
+    console.log('Conectando con la API...');
+    console.log('GET http://localhost:8000/api/incidencias/' + idIncidencia);
     
-    // Esta es la estructura del fetch real (por ahora solo simulado)
+    // Aqui iría el fetch real cuando la API esté lista
     // const respuesta = await fetch('http://localhost:8000/api/incidencias/' + idIncidencia);
     // const datos = await respuesta.json();
-    // console.log('✓ Datos recibidos:', datos);
-    
-    // Por ahora solo mostramos que tenemos la lógica
-    console.log('✓ Función preparada para recibir datos del backend');
     
   } catch (error) {
-    console.error('❌ Error al conectar:', error.message);
+    console.error('Error al conectar:', error.message);
   }
 }
 
@@ -181,13 +171,13 @@ function configurarSalida() {
       localStorage.removeItem('usuarioGuardado');
       localStorage.removeItem('rolGuardado');
       
-      console.log('👋 Sesión cerrada');
+      console.lodatos guardados
+      localStorage.removeItem('usuarioGuardado');
+      localStorage.removeItem('rolGuardado');
       
-      // Volver a login
-      window.location.href = '../index.html';
-    });
-  }
-}
+      console.log('Sesión cerrada');
+      
+      // Volver a index
 
 // ============================================
 // 8. EJECUTAR CUANDO CARGA LA PÁGINA
@@ -197,28 +187,28 @@ document.addEventListener('DOMContentLoaded', function() {
   // Reconocer en qué página estamos
   let rutaActual = window.location.pathname;
   
-  // PÁGINA DE LOGIN (index.html)
+  // LOGIN
   if (rutaActual.includes('index.html') || rutaActual === '/') {
-    console.log('📄 Página: LOGIN');
+    console.log('Pagina: login');
     guardarLogin();
   }
   
-  // PÁGINA DE DASHBOARD (dashboard.html)
+  // DASHBOARD
   if (rutaActual.includes('dashboard.html')) {
-    console.log('📄 Página: DASHBOARD');
+    console.log('Pagina: dashboard');
     personalizarDashboard();
     configuraFiltros();
     configuraBotonesVer();
     configurarSalida();
   }
   
-  // PÁGINA DE DETALLE (detalle-incidencias.html)
+  // DETALLE
   if (rutaActual.includes('detalle-incidencias.html')) {
-    console.log('📄 Página: DETALLE DE INCIDENCIA');
+    console.log('Pagina: detalle');
     personalizarDashboard();
     cargarDetalleIncidencia();
     configurarSalida();
   }
 });
 
-console.log('✅ main.js cargado');
+console.log('main.js cargado');
