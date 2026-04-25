@@ -1,0 +1,12 @@
+# Entornos virtuales (Pilar de Reproducibilidad: no se suben, se recrean)
+venv/
+.venv/
+env/
+
+# Seguridad: No subas nunca tus claves de AWS
+.env
+
+# Basura de Python y Sistema
+__pycache__/
+*.py[cod]
+.DS_Store
