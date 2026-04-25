@@ -1,214 +1,94 @@
-
-// 1. LOGIN : Guardar en localStorage
-
-function guardarLogin() {
-  // Obtener los valores del formulario
-  let cajaUsuario = document.getElementById('usuario');
-  let cajaPassword = document.getElementById('password');
-  let cajaRol = document.getElementById('rol');
-
-  // Validar que todos los campos tengan algo
-  if (!cajaUsuario || !cajaPassword || !cajaRol) {
-    return;
-  }
-
-  // Cuando clickean el botón de login, guardamos en localStorage
-  let formularioLogin = document.getElementById('login-form');
-  
-  if (formularioLogin) {
-    formularioLogin.addEventListener('submit', function(evento) {
-      evento.preventDefault(); // No enviar el formulario normal
-      
-      let nombreUsuario = cajaUsuario.value;
-      let rolSeleccionado = cajaRol.value;
-      
-      // Guardar en localStorage para que no se pierda
-      localStorage.setItem('usuarioGuardado', nombreUsuario);
-      localStorage.setItem('rolGuardado', rolSeleccionado);
-      
-      console.log('Login guardado: ' + nombreUsuario);
-      
-      // Ir al dashboard
-      window.location.href = 'pages/dashboard.html';
-    });
-  }
-}
-
-// ============================================
-// 2. PERSONALIZAR DASHBOARD CON EL USUARIO
-// ============================================
-
-function personalizarDashboard() {
-  // Traer el nombre que guardamos en localStorage
-  let usuarioGuardado = localStorage.getItem('usuarioGuardado');
-  let rolGuardado = localStorage.getItem('rolGuardado');
-  
-  // Buscar el elemento <strong> que dice "Antonio"
-  let etiquetaUsuario = document.querySelector('.user-tag strong');
-  let etiquetaCompleta = document.querySelector('.user-tag span');
-  
-  if (etiquetaUsuario && usuarioGuardado) {
-    // Cambiar "Antonio" por el nombre real
-    etiquetaUsuario.textContent = usuarioGuardado;
-    
-    // También cambiar el texto completo con el rol
-    if (etiquetaCompleta && rolGuardado) {
-      let rolCapitalizado = rolGuardado.charAt(0).toUpperCase() + rolGuardado.slice(1);
-      etiquetaCompleta.textContent = 'Hola, ' + usuarioGuardado + ' (' + rolCapitalizado + ')';
-    }
-  }
-}
-
-// ============================================
-// 3. FILTROS DE BÚSQUEDA - Detectar cambios
-// ============================================
-
-function configuraFiltros() {
-  // Buscar el selector que dice "Todos los estados"
-  let selectFiltro = document.querySelector('.filter-select');
-  
-  if (selectFiltro) {
-    // Cada vez que cambien el valor, ejecutar esto
-    selectFiltro.addEventListener('change', function() {
-      let estadoSeleccionado = this.value;
-      
-      // Mostrar la URL que se pediría al backend
-      if (estadoSeleccionado === 'Todos los estados') {
-        console.log('Filtro: /api/incidencias');
-      } else if (estadoSeleccionado === 'Abiertas') {
-        console.log('Filtro: /api/incidencias?estado=abierta');
-      } else if (estadoSeleccionado === 'Cerradas') {
-        console.log('Filtro: /api/incidencias?estado=cerrada');
-      }
-      
-      // Aquí iría el fetch real (por ahora solo en consola)
-    });
-  }
-}
-
-// ============================================
-// 4. BOTÓN "VER" - Redirigir con el ID
-// ============================================
-
-function configuraBotonesVer() {
-  // Buscar todos los botones de "ver" en la tabla
-  let botonesVer = document.querySelectorAll('.btn-view');
-  
-  botonesVer.forEach(function(boton) {
-    boton.addEventListener('click', function(evento) {
-      evento.preventDefault();
-      
-      // Obtener la fila del botón
-      let fila = this.closest('tr');
-      
-      // Obtener el ID de la primera columna (ej: "#1024")
-      let idTexto = fila.querySelector('.id-text').textContent;
-      
-      // Remover el # del ID
-      let idNumero = idTexto.replace('#', '');
-      
-      console.log('Ir a detalle: ' + idNumero);
-      
-      // Redirigir a detalle-incidencias con el ID
-      window.location.href = 'detalle-incidencias.html?id=' + idNumero;
-    });
-  });
-}
-
-// ============================================
-// 5. DETALLE DE INCIDENCIA - Leer ID de URL
-// ============================================
-
-function cargarDetalleIncidencia() {
-  // Leer el parámetro "id" de la URL (ej: ?id=1024)
-  let parametrosURL = new URLSearchParams(window.location.search);
-  let idIncidencia = parametrosURL.get('id');
-  
-  if (idIncidencia) {
-    // Cambiar el ID en la página
-    let etiquetaID = document.querySelector('.incident-id');
-    if (etiquetaID) {
-      etiquetaID.textContent = '#' + idIncidencia;
-    }
-    
-    console.log('Cargando ID: ' + idIncidencia);
-    
-    // Llamar función para traer datos
-    obtenerDatos(idIncidencia);
-  }
-}
-
-// ============================================
-// 6. FUNCIÓN SIMULADA PARA FETCH (Estudiante)
-// ============================================
-
-async function obtenerDatos(idIncidencia) {
-  try {
-    console.log('Conectando con la API...');
-    console.log('GET http://localhost:8000/api/incidencias/' + idIncidencia);
-    
-    // Aqui iría el fetch real cuando la API esté lista
-    // const respuesta = await fetch('http://localhost:8000/api/incidencias/' + idIncidencia);
-    // const datos = await respuesta.json();
-    
-  } catch (error) {
-    console.error('Error al conectar:', error.message);
-  }
-}
-
-// ============================================
-// 7. BOTÓN SALIR - Limpiar localStorage
-// ============================================
-
-function configurarSalida() {
-  let botonSalir = document.querySelector('.exit-button');
-  
-  if (botonSalir) {
-    botonSalir.addEventListener('click', function(evento) {
-      evento.preventDefault();
-      
-      // Borrar los datos guardados
-      localStorage.removeItem('usuarioGuardado');
-      localStorage.removeItem('rolGuardado');
-      
-      console.lodatos guardados
-      localStorage.removeItem('usuarioGuardado');
-      localStorage.removeItem('rolGuardado');
-      
-      console.log('Sesión cerrada');
-      
-      // Volver a index
-
-// ============================================
-// 8. EJECUTAR CUANDO CARGA LA PÁGINA
-// ============================================
-
+// Esperamos a que el HTML esté cargado para no tener errores
 document.addEventListener('DOMContentLoaded', function() {
-  // Reconocer en qué página estamos
-  let rutaActual = window.location.pathname;
-  
-  // LOGIN
-  if (rutaActual.includes('index.html') || rutaActual === '/') {
-    console.log('Pagina: login');
-    guardarLogin();
-  }
-  
-  // DASHBOARD
-  if (rutaActual.includes('dashboard.html')) {
-    console.log('Pagina: dashboard');
-    personalizarDashboard();
-    configuraFiltros();
-    configuraBotonesVer();
-    configurarSalida();
-  }
-  
-  // DETALLE
-  if (rutaActual.includes('detalle-incidencias.html')) {
-    console.log('Pagina: detalle');
-    personalizarDashboard();
-    cargarDetalleIncidencia();
-    configurarSalida();
-  }
+    
+    // Vemos en qué página estamos para saber qué lógica aplicar
+    const paginaActual = window.location.pathname;
+
+    // --- 1. LÓGICA DE LOGIN (index.html) ---
+    if (paginaActual.includes('index.html') || paginaActual === '/') {
+        const formularioLogin = document.getElementById('login-form');
+        
+        if (formularioLogin) {
+            formularioLogin.addEventListener('submit', function() {
+                // Capturamos lo que el usuario escribe
+                const cajaNombre = document.getElementById('usuario').value;
+                const cajaRol = document.getElementById('rol').value;
+
+                // Guardamos en la "memoria" del navegador (localStorage)
+                // Así los datos no se borran al cambiar de página
+                localStorage.setItem('nombreUsuario', cajaNombre);
+                localStorage.setItem('rolUsuario', cajaRol);
+            });
+        }
+    }
+
+    // --- 2. LÓGICA DEL PANEL (dashboard.html) ---
+    if (paginaActual.includes('dashboard.html')) {
+        // Cambiamos el nombre estático por el que guardamos en el login
+        const etiquetaNombre = document.querySelector('.user-tag strong');
+        const nombreGuardado = localStorage.getItem('nombreUsuario');
+        
+        if (etiquetaNombre && nombreGuardado) {
+            etiquetaNombre.textContent = nombreGuardado.toUpperCase();
+        }
+
+        // --- UTILIDAD DE BÚSQUEDA Y FILTROS ---
+        // Buscamos los selectores que pide la profesora para filtrar
+        const selectPrioridad = document.getElementById('prioridad');
+        const selectEstado = document.getElementById('estado');
+
+        function realizarBusqueda() {
+            const prio = selectPrioridad.value;
+            const est = selectEstado.value;
+
+            // Simulamos la consulta dinámica que pide la profesora (Query Parameters)
+            console.log("Enviando consulta a la RDS de AWS...");
+            console.log("URL generada: http://localhost:8000/incidencias?prioridad=" + prio + "&estado=" + est);
+            
+            // Aquí iría el fetch real:
+            // pedirIncidenciasAlServidor(prio, est);
+        }
+
+        // Si cambian los filtros, se "dispara" la búsqueda
+        if (selectPrioridad) selectPrioridad.addEventListener('change', realizarBusqueda);
+        if (selectEstado) selectEstado.addEventListener('change', realizarBusqueda);
+
+        // --- REDIRECCIÓN POR ID ---
+        // Buscamos todos los botones del "ojo" en la tabla
+        const botonesVer = document.querySelectorAll('.btn-view');
+        botonesVer.forEach(function(boton) {
+            boton.addEventListener('click', function(event) {
+                // Buscamos la fila donde se hizo click para sacar el ID
+                const fila = event.target.closest('tr');
+                const idIncidencia = fila.querySelector('.id-text').textContent.replace('#', '');
+                
+                // Redirigimos usando el ID (Path Parameter)
+                window.location.href = 'detalle-incidencias.html?id=' + idIncidencia;
+            });
+        });
+    }
+
+    // --- 3. LÓGICA DE DETALLE (detalle-incidencias.html) ---
+    if (paginaActual.includes('detalle-incidencias.html')) {
+        // Sacamos el ID de la URL
+        const parametrosURL = new URLSearchParams(window.location.search);
+        const idRecibido = parametrosURL.get('id');
+
+        if (idRecibido) {
+            const spanId = document.querySelector('.incident-id');
+            if (spanId) spanId.textContent = '#' + idRecibido;
+            console.log("Pidiendo al backend los detalles de la incidencia nº " + idRecibido);
+        }
+    }
 });
 
-console.log('main.js cargado');
+// Función básica para el fetch (
+async function pedirIncidenciasAlServidor(prio, est) {
+    try {
+        console.log("Conectando con FastAPI...");
+        // let respuesta = await fetch(`http://localhost:8000/incidencias?prioridad=${prio}&estado=${est}`);
+        // let datos = await respuesta.json();
+    } catch (error) {
+        console.log("Error: No se ha podido conectar con la base de datos de AWS");
+    }
+}

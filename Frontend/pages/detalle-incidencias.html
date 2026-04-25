@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,6 +9,7 @@
     <link rel="stylesheet" href="../css/estilosincidencias.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
+
 <body class="main-layout">
 
     <nav class="navbar">
@@ -72,8 +74,10 @@
                 <div class="incident-description">
                     <label>DESCRIPCIÓN</label>
                     <p>
-                        La aplicación está experimentando fallos intermitentes de conexión con la instancia de RDS (Aurora MySQL). 
-                        Los usuarios reportan errores al intentar acceder a módulos que requieren consultas a bases de datos.
+                        La aplicación está experimentando fallos intermitentes de conexión con la instancia de RDS
+                        (Aurora MySQL).
+                        Los usuarios reportan errores al intentar acceder a módulos que requieren consultas a bases de
+                        datos.
                     </p>
                 </div>
             </section>
@@ -92,7 +96,8 @@
                             <span class="comment-date">08/04/2026 14:30</span>
                         </div>
                         <div class="comment-body">
-                            Detectamos que la conexión con la BD está fallando. Se presentan timeouts después de 30 segundos.
+                            Detectamos que la conexión con la BD está fallando. Se presentan timeouts después de 30
+                            segundos.
                         </div>
                     </div>
 
@@ -103,7 +108,7 @@
                             <span class="comment-date">08/04/2026 15:45</span>
                         </div>
                         <div class="comment-body">
-                            Revisamos los logs de RDS y encontramos que hay un problema con los connection pools. 
+                            Revisamos los logs de RDS y encontramos que hay un problema con los connection pools.
                             Aumentamos el límite de conexiones concurrentes a 200.
                         </div>
                     </div>
@@ -115,7 +120,7 @@
                             <span class="comment-date">09/04/2026 09:00</span>
                         </div>
                         <div class="comment-body">
-                            Se mantienen los fallos. Probamos con diferentes endpoints y el problema persiste. 
+                            Se mantienen los fallos. Probamos con diferentes endpoints y el problema persiste.
                             Necesitamos revisar la configuración de seguridad en los grupos de seguridad.
                         </div>
                     </div>
@@ -127,7 +132,8 @@
                             <span class="comment-date">09/04/2026 09:15</span>
                         </div>
                         <div class="comment-body">
-                            Identificamos un problema en la regla del grupo de seguridad. Añadimos la aplicación a la whitelist. 
+                            Identificamos un problema en la regla del grupo de seguridad. Añadimos la aplicación a la
+                            whitelist.
                             Las conexiones están normalizándose. Daremos seguimiento.
                         </div>
                     </div>
@@ -146,4 +152,5 @@
     </main>
     <script src="../js/main.js"></script>
 </body>
+
 </html>
