@@ -42,6 +42,7 @@ const API = {
     async fetch(ruta, opciones = {}) {
         try {
             const url = CONFIG.apiUrl + ruta;
+            console.log('Llamando API:', url);
             const respuesta = await fetch(url, opciones);
             
             if (!respuesta.ok) {
@@ -102,32 +103,56 @@ function mostrarExito(mensaje) {
 function obtenerFiltros() {
     const filtros = {};
     
+    // Buscar los selects por clase o por name attribute
+    const selectEstado = document.querySelector('.filter-select') || document.getElementById('estado');
     const selectPrioridad = document.getElementById('prioridad');
-    const selectEstado = document.getElementById('estado');
     
+    if (selectEstado && selectEstado.value && selectEstado.value !== 'Todos los estados') {
+        // Normalizar el valor del estado
+        const estado = selectEstado.value.toLowerCase();
+        if (estado !== 'todos los estados') {
+            filtros.estado = estado;
+        }
+    }
     if (selectPrioridad && selectPrioridad.value) {
         filtros.prioridad = selectPrioridad.value;
-    }
-    if (selectEstado && selectEstado.value) {
-        filtros.estado = selectEstado.value;
     }
     
     return filtros;
 }
 
-async function cargarIncidencias() {
+async function cargarIncidencias(desde = 0) {
     try {
         const filtros = obtenerFiltros();
-        const datos = await API.obtenerIncidencias(filtros);
+        let datos = await API.obtenerIncidencias(filtros);
         
+        // Manejar diferentes formatos de respuesta
+        let incidencias = [];
         if (datos && Array.isArray(datos.data)) {
-            renderizarTabla(datos.data);
+            incidencias = datos.data;
         } else if (Array.isArray(datos)) {
-            renderizarTabla(datos);
+            incidencias = datos;
         } else {
-            mostrarError('Formato de respuesta inválido');
+            console.error('Formato de respuesta no esperado:', datos);
+            incidencias = [];
         }
+        
+        // Filtrar por búsqueda si existe
+        const inputBusqueda = document.querySelector('input[placeholder*="Buscar"]');
+        if (inputBusqueda && inputBusqueda.value.trim()) {
+            const termino = inputBusqueda.value.toLowerCase();
+            incidencias = incidencias.filter(inc => {
+                const id = String(inc.id).toLowerCase();
+                const titulo = (inc.titulo || '').toLowerCase();
+                return id.includes(termino) || titulo.includes(termino);
+            });
+        }
+        
+        renderizarTabla(incidencias);
+        actualizarEstadisticas(incidencias);
+        
     } catch (error) {
+        console.error('Error al cargar incidencias:', error);
         mostrarError('No se pudieron cargar las incidencias');
     }
 }
@@ -139,17 +164,32 @@ function renderizarTabla(incidencias) {
     tbody.innerHTML = '';
     
     if (!incidencias || incidencias.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="5" style="text-align: center; padding: 20px;">No hay incidencias</td></tr>';
+        const fila = document.createElement('tr');
+        fila.innerHTML = '<td colspan="5" style="text-align: center; padding: 20px; color: #999;">No hay incidencias que mostrar</td>';
+        tbody.appendChild(fila);
         return;
     }
     
     incidencias.forEach(function(incidencia) {
         const fila = document.createElement('tr');
+        const prioridad = (incidencia.prioridad || 'media').toLowerCase();
+        const estado = (incidencia.estado || 'abierta').toLowerCase();
+        
+        // Determinar clase CSS para prioridad
+        let clasePrio = 'mid';
+        if (prioridad.includes('alta') || prioridad.includes('high')) clasePrio = 'high';
+        if (prioridad.includes('baja') || prioridad.includes('low')) clasePrio = 'low';
+        
+        // Determinar clase CSS para estado
+        let claseEstado = 'open';
+        if (estado.includes('cerrada') || estado.includes('closed')) claseEstado = 'closed';
+        if (estado.includes('progreso') || estado.includes('progress')) claseEstado = 'progress';
+        
         fila.innerHTML = `
             <td class="id-text">#${incidencia.id}</td>
             <td>${incidencia.titulo || 'Sin título'}</td>
-            <td><span class="prio-tag">${incidencia.prioridad || 'normal'}</span></td>
-            <td><span class="state-tag">${incidencia.estado || 'abierta'}</span></td>
+            <td><span class="prio-tag ${clasePrio}">${incidencia.prioridad || 'Media'}</span></td>
+            <td><span class="state-tag ${claseEstado}">${incidencia.estado || 'Abierta'}</span></td>
             <td>
                 <button class="btn-view" data-id="${incidencia.id}" type="button">
                     <i class="fas fa-eye"></i>
@@ -158,6 +198,31 @@ function renderizarTabla(incidencias) {
         `;
         tbody.appendChild(fila);
     });
+    
+    // Actualizar información de paginación
+    const footer = document.querySelector('.card-footer p');
+    if (footer) {
+        footer.textContent = `Mostrando ${incidencias.length} incidencias`;
+    }
+}
+
+function actualizarEstadisticas(incidencias) {
+    // Calcular estadísticas
+    const total = incidencias.length;
+    const abiertas = incidencias.filter(inc => 
+        (inc.estado || '').toLowerCase().includes('abierta')
+    ).length;
+    const criticas = incidencias.filter(inc => 
+        (inc.prioridad || '').toLowerCase().includes('alta')
+    ).length;
+    
+    // Actualizar elementos
+    const stats = document.querySelectorAll('.stat-item .value');
+    if (stats.length >= 3) {
+        stats[0].textContent = total;
+        stats[1].textContent = abiertas;
+        stats[2].textContent = criticas;
+    }
 }
 
 async function cargarDetalleIncidencia(id) {
@@ -175,14 +240,18 @@ async function cargarDetalleIncidencia(id) {
             
             // Actualizar otros campos si existen
             const prioridad = document.querySelector('.incident-priority');
-            if (prioridad) prioridad.textContent = datos.prioridad || 'normal';
+            if (prioridad) prioridad.textContent = datos.prioridad || 'Normal';
             
             const estado = document.querySelector('.incident-state');
-            if (estado) estado.textContent = datos.estado || 'abierta';
+            if (estado) estado.textContent = datos.estado || 'Abierta';
+            
+            const reportadoPor = document.querySelector('.incident-reporter');
+            if (reportadoPor) reportadoPor.textContent = datos.reportado_por || 'Desconocido';
             
             mostrarExito('Incidencia cargada correctamente');
         }
     } catch (error) {
+        console.error('Error al cargar detalle:', error);
         mostrarError('No se pudo cargar el detalle de la incidencia');
     }
 }
@@ -194,14 +263,23 @@ async function crearIncidencia(event) {
         const datos = {
             titulo: document.getElementById('titulo')?.value,
             descripcion: document.getElementById('descripcion')?.value,
-            prioridad: document.getElementById('prioridad')?.value || 'normal',
+            prioridad: document.getElementById('prioridad')?.value || 'media',
             reportado_por: Usuario.obtener() || 'Anónimo'
         };
         
+        // Validar campos
+        if (!datos.titulo || !datos.descripcion) {
+            mostrarError('Por favor completa todos los campos requeridos');
+            return;
+        }
+        
         await API.crearIncidencia(datos);
         mostrarExito('Incidencia creada correctamente');
-        window.location.href = 'dashboard.html';
+        setTimeout(() => {
+            window.location.href = 'dashboard.html';
+        }, 500);
     } catch (error) {
+        console.error('Error al crear incidencia:', error);
         mostrarError('Error al crear la incidencia');
     }
 }
@@ -220,21 +298,38 @@ function personalizarDashboard() {
         etiquetaNombre.textContent = usuario.toUpperCase();
     }
     
-    const etiquetaRol = document.querySelector('.user-tag span');
-    if (etiquetaRol && rol) {
-        etiquetaRol.textContent = `Hola, ${usuario} (${rol})`;
+    const etiquetaSpan = document.querySelector('.user-tag span');
+    if (etiquetaSpan && rol) {
+        etiquetaSpan.innerHTML = `Hola, <strong>${usuario}</strong> (${rol})`;
     }
 }
 
 function configurarBotonesBusqueda() {
-    const selectPrioridad = document.getElementById('prioridad');
-    const selectEstado = document.getElementById('estado');
-    
-    if (selectPrioridad) {
-        selectPrioridad.addEventListener('change', cargarIncidencias);
-    }
+    // Configurar filtro por estado
+    const selectEstado = document.querySelector('.filter-select') || document.getElementById('estado');
     if (selectEstado) {
-        selectEstado.addEventListener('change', cargarIncidencias);
+        selectEstado.addEventListener('change', function() {
+            console.log('Filtro de estado cambiado:', this.value);
+            cargarIncidencias();
+        });
+    }
+    
+    // Configurar filtro por prioridad
+    const selectPrioridad = document.getElementById('prioridad');
+    if (selectPrioridad) {
+        selectPrioridad.addEventListener('change', function() {
+            console.log('Filtro de prioridad cambiado:', this.value);
+            cargarIncidencias();
+        });
+    }
+    
+    // Configurar búsqueda por ID o título
+    const inputBusqueda = document.querySelector('input[placeholder*="Buscar"]');
+    if (inputBusqueda) {
+        inputBusqueda.addEventListener('input', function() {
+            console.log('Búsqueda:', this.value);
+            cargarIncidencias();
+        });
     }
 }
 
@@ -245,6 +340,7 @@ function configurarBotonesVer() {
         
         const id = boton.getAttribute('data-id');
         if (id) {
+            console.log('Abriendo incidencia:', id);
             window.location.href = 'detalle-incidencias.html?id=' + id;
         }
     });
@@ -255,6 +351,7 @@ function configurarSalida() {
     if (botonSalida) {
         botonSalida.addEventListener('click', function(event) {
             event.preventDefault();
+            console.log('Cerrando sesión');
             Usuario.limpiar();
             window.location.href = '../index.html';
         });
@@ -263,11 +360,13 @@ function configurarSalida() {
 
 // === INICIALIZACIÓN ===
 document.addEventListener('DOMContentLoaded', function() {
+    console.log('Página cargada');
     const paginaActual = window.location.pathname;
     
     // Detectar qué página estamos visitando y ejecutar lógica correspondiente
     if (paginaActual.includes('index.html') || paginaActual === '/' || paginaActual.endsWith('/')) {
         // PÁGINA DE LOGIN
+        console.log('Inicializando página de login');
         const formularioLogin = document.getElementById('login-form');
         if (formularioLogin) {
             formularioLogin.addEventListener('submit', function(event) {
@@ -276,6 +375,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 const rol = document.getElementById('rol')?.value;
                 
                 if (Usuario.guardar(usuario, rol)) {
+                    console.log('Rediriendo al dashboard');
                     window.location.href = 'pages/dashboard.html';
                 }
             });
@@ -283,19 +383,23 @@ document.addEventListener('DOMContentLoaded', function() {
     } 
     else if (paginaActual.includes('dashboard.html')) {
         // PÁGINA DE DASHBOARD
+        console.log('Inicializando dashboard');
         if (!Usuario.estaAutenticado()) {
             window.location.href = '../index.html';
             return;
         }
         
         personalizarDashboard();
-        cargarIncidencias();
         configurarBotonesBusqueda();
         configurarBotonesVer();
         configurarSalida();
+        
+        // Cargar incidencias al entrar
+        cargarIncidencias();
     } 
     else if (paginaActual.includes('detalle-incidencias.html')) {
         // PÁGINA DE DETALLE
+        console.log('Inicializando detalle de incidencia');
         if (!Usuario.estaAutenticado()) {
             window.location.href = '../index.html';
             return;
@@ -316,8 +420,9 @@ document.addEventListener('DOMContentLoaded', function() {
             window.location.href = 'dashboard.html';
         }
     } 
-    else if (paginaActual.includes('incidencias.html')) {
+    else if (paginaActual.includes('incidencias.html') || paginaActual.includes('registro.html')) {
         // PÁGINA DE CREAR INCIDENCIA
+        console.log('Inicializando página de crear incidencia');
         if (!Usuario.estaAutenticado()) {
             window.location.href = '../index.html';
             return;
