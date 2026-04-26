@@ -23,7 +23,7 @@ El objetivo es proporcionar una puerta de entrada segura, intuitiva y totalmente
 - Se ha añadido un campo específico de **Confirmar Contraseña** con un icono de escudo diferenciador.
 - Los iconos de **FontAwesome** se han integrado en cada campo para facilitar la identificación rápida de los datos requeridos.
 
-#### 4. Flujo de Navegación y Redirección
+#### 3. Flujo de Navegación y Redirección
 - El formulario de Login incluye un selector de **Rol en la empresa** (Empleado, Técnico, Administrador) para la futura gestión de permisos.
 - Se ha configurado el atributo `action` en ambos formularios para redirigir automáticamente al **dashboard.html**.
 - Se han establecido enlaces de navegación cruzada entre el Login y el Registro.
