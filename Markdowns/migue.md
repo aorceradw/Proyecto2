@@ -17,16 +17,13 @@ El objetivo es proporcionar una puerta de entrada segura, intuitiva y totalmente
 - El diseño es **completamente responsivo**, adaptándose a cualquier dispositivo (móvil, tablet o PC) mediante el uso de Flexbox y unidades relativas.
 - Se han utilizado degradados modernos para el fondo y tarjetas con sombras suaves para mejorar la experiencia de usuario.
 
-#### 2. Funcionalidad de Visualización de Contraseña (Toggle)
-- Se ha implementado un botón de "ojo" a la derecha de cada campo de contraseña.
-- Mediante **JavaScript**, se permite al usuario alternar entre ver la contraseña o mantenerla oculta, mejorando la usabilidad durante el registro y el acceso.
 
-#### 3. Formulario de Registro con Validación Visual
+#### 2. Formulario de Registro con Validación Visual
 - Se han incluido campos obligatorios (`required`) para Nombre Completo, Usuario y Contraseña.
 - Se ha añadido un campo específico de **Confirmar Contraseña** con un icono de escudo diferenciador.
 - Los iconos de **FontAwesome** se han integrado en cada campo para facilitar la identificación rápida de los datos requeridos.
 
-#### 4. Flujo de Navegación y Redirección
+#### 3. Flujo de Navegación y Redirección
 - El formulario de Login incluye un selector de **Rol en la empresa** (Empleado, Técnico, Administrador) para la futura gestión de permisos.
 - Se ha configurado el atributo `action` en ambos formularios para redirigir automáticamente al **dashboard.html**.
 - Se han establecido enlaces de navegación cruzada entre el Login y el Registro.
