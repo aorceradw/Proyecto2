@@ -4,7 +4,7 @@ from app.main import app
 client = TestClient(app)
 
 def test_root_responde():
-    """Verifica que la API arranca y responde correctamente."""
+    """Verifica que la API enciende y responde correctamente."""
     response = client.get("/")
     assert response.status_code == 200
     assert response.json() == {"mensaje": "API de Incidencias funcionando"}
