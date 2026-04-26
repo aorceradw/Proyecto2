@@ -1,7 +1,6 @@
 // Esperamos a que el HTML esté cargado para no tener errores
 document.addEventListener('DOMContentLoaded', function() {
     
-    // Vemos en qué página estamos para saber qué lógica aplicar
     const paginaActual = window.location.pathname;
 
     // --- 1. LÓGICA DE LOGIN (index.html) ---
@@ -10,12 +9,8 @@ document.addEventListener('DOMContentLoaded', function() {
         
         if (formularioLogin) {
             formularioLogin.addEventListener('submit', function() {
-                // Capturamos lo que el usuario escribe
                 const cajaNombre = document.getElementById('usuario').value;
                 const cajaRol = document.getElementById('rol').value;
-
-                // Guardamos en la "memoria" del navegador (localStorage)
-                // Así los datos no se borran al cambiar de página
                 localStorage.setItem('nombreUsuario', cajaNombre);
                 localStorage.setItem('rolUsuario', cajaRol);
             });
@@ -24,7 +19,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // --- 2. LÓGICA DEL PANEL (dashboard.html) ---
     if (paginaActual.includes('dashboard.html')) {
-        // Cambiamos el nombre estático por el que guardamos en el login
         const etiquetaNombre = document.querySelector('.user-tag strong');
         const nombreGuardado = localStorage.getItem('nombreUsuario');
         
@@ -32,63 +26,137 @@ document.addEventListener('DOMContentLoaded', function() {
             etiquetaNombre.textContent = nombreGuardado.toUpperCase();
         }
 
-        // --- UTILIDAD DE BÚSQUEDA Y FILTROS ---
-        // Buscamos los selectores que pide la profesora para filtrar
+        // Cargamos las incidencias al entrar al dashboard
+        cargarIncidencias();
+
         const selectPrioridad = document.getElementById('prioridad');
         const selectEstado = document.getElementById('estado');
 
-        function realizarBusqueda() {
-            const prio = selectPrioridad.value;
-            const est = selectEstado.value;
+        if (selectPrioridad) selectPrioridad.addEventListener('change', cargarIncidencias);
+        if (selectEstado) selectEstado.addEventListener('change', cargarIncidencias);
 
-            // Simulamos la consulta dinámica que pide la profesora (Query Parameters)
-            console.log("Enviando consulta a la RDS de AWS...");
-            console.log("URL generada: http://localhost:8000/incidencias?prioridad=" + prio + "&estado=" + est);
-            
-            // Aquí iría el fetch real:
-            // pedirIncidenciasAlServidor(prio, est);
-        }
-
-        // Si cambian los filtros, se "dispara" la búsqueda
-        if (selectPrioridad) selectPrioridad.addEventListener('change', realizarBusqueda);
-        if (selectEstado) selectEstado.addEventListener('change', realizarBusqueda);
-
-        // --- REDIRECCIÓN POR ID ---
-        // Buscamos todos los botones del "ojo" en la tabla
-        const botonesVer = document.querySelectorAll('.btn-view');
-        botonesVer.forEach(function(boton) {
-            boton.addEventListener('click', function(event) {
-                // Buscamos la fila donde se hizo click para sacar el ID
-                const fila = event.target.closest('tr');
-                const idIncidencia = fila.querySelector('.id-text').textContent.replace('#', '');
-                
-                // Redirigimos usando el ID (Path Parameter)
-                window.location.href = 'detalle-incidencias.html?id=' + idIncidencia;
-            });
+        // Redirección por ID al hacer click en el ojo
+        document.addEventListener('click', function(event) {
+            const boton = event.target.closest('.btn-view');
+            if (!boton) return;
+            const fila = boton.closest('tr');
+            const idIncidencia = fila.querySelector('.id-text').textContent.replace('#', '');
+            window.location.href = 'detalle-incidencias.html?id=' + idIncidencia;
         });
     }
 
     // --- 3. LÓGICA DE DETALLE (detalle-incidencias.html) ---
     if (paginaActual.includes('detalle-incidencias.html')) {
-        // Sacamos el ID de la URL
         const parametrosURL = new URLSearchParams(window.location.search);
         const idRecibido = parametrosURL.get('id');
 
         if (idRecibido) {
             const spanId = document.querySelector('.incident-id');
             if (spanId) spanId.textContent = '#' + idRecibido;
-            console.log("Pidiendo al backend los detalles de la incidencia nº " + idRecibido);
+            cargarDetalleIncidencia(idRecibido);
+        }
+    }
+
+    // --- 4. LÓGICA DE NUEVA INCIDENCIA (incidencias.html) ---
+    if (paginaActual.includes('incidencias.html')) {
+        const formulario = document.querySelector('.new-incident-form');
+        if (formulario) {
+            formulario.addEventListener('submit', async function(event) {
+                event.preventDefault();
+                await crearIncidencia();
+            });
         }
     }
 });
 
-// Función básica para el fetch (
-async function pedirIncidenciasAlServidor(prio, est) {
+// --- FUNCIONES DE FETCH AL BACKEND ---
+
+async function cargarIncidencias() {
     try {
-        console.log("Conectando con FastAPI...");
-        // let respuesta = await fetch(`http://localhost:8000/incidencias?prioridad=${prio}&estado=${est}`);
-        // let datos = await respuesta.json();
+        const selectPrioridad = document.getElementById('prioridad');
+        const selectEstado = document.getElementById('estado');
+
+        const prio = selectPrioridad ? selectPrioridad.value : '';
+        const est = selectEstado ? selectEstado.value : '';
+
+        let url = '/api/incidencias';
+        const params = [];
+        if (prio) params.push('prioridad=' + prio);
+        if (est) params.push('estado=' + est);
+        if (params.length > 0) url += '?' + params.join('&');
+
+        const respuesta = await fetch(url);
+        const datos = await respuesta.json();
+
+        if (datos.status === 'success') {
+            renderizarTabla(datos.data);
+        }
     } catch (error) {
-        console.log("Error: No se ha podido conectar con la base de datos de AWS");
+        console.error('Error al cargar incidencias:', error);
     }
+}
+
+async function cargarDetalleIncidencia(id) {
+    try {
+        const respuesta = await fetch('/api/incidencias/' + id);
+        const datos = await respuesta.json();
+
+        if (datos && datos.titulo) {
+            const titulo = document.querySelector('.incident-info h2');
+            if (titulo) titulo.textContent = datos.titulo;
+
+            const descripcion = document.querySelector('.incident-description p');
+            if (descripcion) descripcion.textContent = datos.descripcion;
+        }
+    } catch (error) {
+        console.error('Error al cargar detalle:', error);
+    }
+}
+
+async function crearIncidencia() {
+    try {
+        const nueva = {
+            titulo: document.getElementById('titulo').value,
+            descripcion: document.getElementById('descripcion').value,
+            prioridad: document.getElementById('prioridad').value,
+            reportado_por: localStorage.getItem('nombreUsuario') || 'Anónimo'
+        };
+
+        const respuesta = await fetch('/api/incidencias', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(nueva)
+        });
+
+        if (respuesta.ok) {
+            window.location.href = 'dashboard.html';
+        } else {
+            console.error('Error al crear la incidencia');
+        }
+    } catch (error) {
+        console.error('Error:', error);
+    }
+}
+
+function renderizarTabla(incidencias) {
+    const tbody = document.querySelector('.table-main tbody');
+    if (!tbody) return;
+
+    tbody.innerHTML = '';
+
+    incidencias.forEach(function(inc) {
+        const fila = document.createElement('tr');
+        fila.innerHTML = `
+            <td class="id-text">#${inc.id}</td>
+            <td>${inc.titulo}</td>
+            <td><span class="prio-tag">${inc.prioridad}</span></td>
+            <td><span class="state-tag">${inc.estado}</span></td>
+            <td>
+                <button class="btn-view">
+                    <i class="fas fa-eye"></i>
+                </button>
+            </td>
+        `;
+        tbody.appendChild(fila);
+    });
 }

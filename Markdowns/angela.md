@@ -294,3 +294,34 @@ Ahora el equipo tiene:
 - Procesos claros (GitFlow, code reviews, pull requests)
 - Documentación detallada para que todos entiendan
 Estoy aprendiendo, mejorando en organización y flujos de trabajo cada día, y honestamente me encanta lo que estoy logrando.
+
+
+## Infraestructura y Despliegue
+
+**Responsable:** Ángela (Líder del repositorio)
+
+### Arquitectura AWS
+- VPC `vpc_proyecto2` con subred pública y 2 subredes privadas
+- EC2 pública con Debian (`35.174.210.18`) como servidor de despliegue
+- RDS MySQL (`database-proyecto2.csbsuu7qdps4.us-east-1.rds.amazonaws.com`) en subred privada, puerto 3306
+- Grupo de seguridad `bd_incidencias` con acceso al puerto 3306 solo desde el SG de la EC2
+
+### Orquestación con Docker Compose
+- Contenedor **frontend** con Nginx sirviendo los archivos estáticos
+- Contenedor **backend** con FastAPI conectado a la RDS
+- Red interna `app-network` para comunicación entre contenedores
+- Proxy inverso en Nginx redirigiendo `/api/` hacia el backend
+
+### Gestión del repositorio
+- Rama principal de desarrollo: `develop`
+- Revisión y merge de Pull Requests de los compañeros
+- Resolución de conflictos y limpieza del historial de commits
+- Mantenimiento del `.gitignore` y `.env.example`
+
+### Frontend
+- Estructura de páginas: `index.html`, `dashboard.html`, `detalle-incidencias.html`, `incidencias.html`, `registro.html`
+- Configuración de Nginx (`default.conf`) con proxy inverso al backend
+- Lógica del cliente (`main.js`) con llamadas reales a la API
+
+
+Esta parte me ha resultado mas enreversada,pero a su vez entretenida.
