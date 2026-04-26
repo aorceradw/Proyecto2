@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,12 +10,13 @@
     <link rel="stylesheet" href="../css/estilosFormulario.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
+
 <body class="main-layout">
 
     <nav class="navbar">
         <div class="user-tag">
             <i class="fas fa-user-circle"></i>
-            <span>Hola, <strong>Josemi</strong> (Usuario)</span>
+            <span>Hola, <strong id="nombre-usuario">...</strong> (<span id="rol-usuario">...</span>)</span>
         </div>
         <a href="../index.html" class="exit-button">
             <i class="fas fa-sign-out-alt"></i> Salir
@@ -37,44 +39,36 @@
             </header>
 
             <section class="incident-info">
-                <form action="dashboard.html" method="GET" class="new-incident-form">
-                    
+                <form class="new-incident-form" id="form-nueva-incidencia">
+
                     <div class="incident-details-grid">
                         <div class="detail-field">
                             <label for="titulo">Título de la Incidencia</label>
-                            <input type="text" id="titulo" name="titulo" placeholder="Ej: No funciona la impresora" required>
-                        </div>
-
-                        <div class="detail-field">
-                            <label for="categoria">Categoría</label>
-                            <select id="categoria" name="categoria" required>
-                                <option value="" disabled selected>Selecciona una opción</option>
-                                <option value="hardware">Hardware</option>
-                                <option value="software">Software / Aplicaciones</option>
-                                <option value="redes">Redes e Internet</option>
-                                <option value="seguridad">Seguridad</option>
-                            </select>
+                            <input type="text" id="titulo" name="titulo" placeholder="Ej: No funciona la impresora"
+                                required>
                         </div>
 
                         <div class="detail-field">
                             <label for="prioridad">Prioridad</label>
+                            <!-- Valores en minúscula para que coincidan con la BD -->
                             <select id="prioridad" name="prioridad" required>
                                 <option value="baja">Baja</option>
-                                <option value="media">Media</option>
+                                <option value="media" selected>Media</option>
                                 <option value="alta">Alta</option>
-                                <option value="critica">Crítica</option>
                             </select>
                         </div>
                     </div>
 
                     <div class="incident-description">
                         <label for="descripcion">Descripción detallada</label>
-                        <textarea id="descripcion" name="descripcion" placeholder="Explica el problema con el mayor detalle posible..." rows="6" required></textarea>
+                        <textarea id="descripcion" name="descripcion"
+                            placeholder="Explica el problema con el mayor detalle posible..." rows="6"
+                            required></textarea>
                     </div>
 
                     <div class="form-actions" style="margin-top: 25px; display: flex; justify-content: flex-end;">
                         <button type="submit" class="btn-change-state">
-                            <i class="fas fa-paper-plane"></i> Enviar Incidencia <!--Para que funciones, tengo que cambiar el método post, tener el backend para que reciba estos datos y tener una base de datos para almacenarlos-->
+                            <i class="fas fa-paper-plane"></i> Enviar Incidencia
                         </button>
                     </div>
                 </form>
@@ -84,4 +78,5 @@
     </main>
     <script src="../js/main.js"></script>
 </body>
+
 </html>

@@ -6,7 +6,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Panel de Incidencias</title>
     <link rel="stylesheet" href="../css/estilosDashboard.css">
-    <link rel="stylesheet" href="../css/estilos.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 
@@ -15,7 +14,8 @@
     <nav class="navbar">
         <div class="user-tag">
             <i class="fas fa-user-circle"></i>
-            <span>Hola, <strong>Antonio</strong> (Admin)</span>
+            <!-- El JS rellena el nombre y rol del usuario -->
+            <span>Hola, <strong id="nombre-usuario">...</strong> (<span id="rol-usuario">...</span>)</span>
         </div>
         <a href="../index.html" class="exit-button">
             <i class="fas fa-sign-out-alt"></i> Salir
@@ -25,18 +25,19 @@
     <main class="dashboard-container">
         <div class="dashboard-card">
 
+            <!-- Estadísticas: el JS las rellena con datos reales de la API -->
             <section class="stats-grid">
                 <div class="stat-item">
                     <span class="label">TOTAL</span>
-                    <span class="value">24</span>
+                    <span class="value" id="stat-total">—</span>
                 </div>
                 <div class="stat-item">
                     <span class="label">ABIERTAS</span>
-                    <span class="value color-open">12</span>
+                    <span class="value color-open" id="stat-abiertas">—</span>
                 </div>
                 <div class="stat-item no-border">
-                    <span class="label">CRÍTICAS</span>
-                    <span class="value color-crit">3</span>
+                    <span class="label">PRIORIDAD ALTA</span>
+                    <span class="value color-crit" id="stat-criticas">—</span>
                 </div>
             </section>
 
@@ -56,10 +57,19 @@
                     <input type="text" placeholder="Buscar por ID o título...">
                 </div>
                 <div class="status-select-wrapper">
-                    <select class="filter-select">
-                        <option>Todos los estados</option>
-                        <option>Abiertas</option>
-                        <option>Cerradas</option>
+                    <!-- Valores en minúscula para que coincidan con la BD -->
+                    <select class="filter-select" id="filtro-estado">
+                        <option value="">Todos los estados</option>
+                        <option value="abierta">Abierta</option>
+                        <option value="cerrada">Cerrada</option>
+                    </select>
+                </div>
+                <div class="status-select-wrapper">
+                    <select class="filter-select" id="filtro-prioridad">
+                        <option value="">Todas las prioridades</option>
+                        <option value="alta">Alta</option>
+                        <option value="media">Media</option>
+                        <option value="baja">Baja</option>
                     </select>
                 </div>
             </div>
@@ -75,38 +85,20 @@
                             <th>ACCIONES</th>
                         </tr>
                     </thead>
-                    <tbody>
+                    <!-- El JS rellena este tbody con datos reales -->
+                    <tbody id="tabla-incidencias">
                         <tr>
-                            <td class="id-text">#1024</td>
-                            <td>Error de conexión base de datos (RDS)</td>
-                            <td><span class="prio-tag high">Alta</span></td>
-                            <td><span class="state-tag open">Abierta</span></td>
-                            <td>
-                                <a href="detalle-incidencias.html" class="btn-view">
-                                    <i class="fas fa-eye"></i>
-                                </a>
+                            <td colspan="5" style="text-align:center; padding:20px; color:#999;">
+                                Cargando incidencias...
                             </td>
-                        </tr>
-                        <tr>
-                            <td class="id-text">#1025</td>
-                            <td>Petición de nuevas licencias</td>
-                            <td><span class="prio-tag mid">Media</span></td>
-                            <td><span class="state-tag closed">Cerrada</span></td>
-                            <td><button class="btn-view"><i class="fas fa-eye"></i></button></td>
-                        </tr>
-                        <tr>
-                            <td class="id-text">#1026</td>
-                            <td>Lentitud detectada en el servidor web (Nginx)</td>
-                            <td><span class="prio-tag low">Baja</span></td>
-                            <td><span class="state-tag open">Abierta</span></td>
-                            <td><button class="btn-view"><i class="fas fa-eye"></i></button></td>
                         </tr>
                     </tbody>
                 </table>
             </div>
 
             <footer class="card-footer">
-                <p>Mostrando 3 de 24 incidencias</p>
+                <!-- El JS actualiza este texto -->
+                <p id="info-paginacion">Cargando...</p>
                 <div class="pagination">
                     <button class="page-link">Anterior</button>
                     <button class="page-link active">1</button>

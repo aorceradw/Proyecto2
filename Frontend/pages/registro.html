@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,6 +8,7 @@
     <link rel="stylesheet" href="../css/estilosLogin.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
+
 <body>
     <main class="login-container">
         <section class="login-card">
@@ -16,7 +18,8 @@
                 <p>Completa tus datos para registrarte en el sistema</p>
             </div>
 
-            <form id="register-form" action="dashboard.html" method="POST">
+            <!-- Sin action ni method: el JS intercepta el submit -->
+            <form id="register-form">
                 <div class="input-group">
                     <label for="fullname">Nombre Completo</label>
                     <div class="input-wrapper">
@@ -34,10 +37,24 @@
                 </div>
 
                 <div class="input-group">
+                    <label for="rol-registro">Rol en la empresa</label>
+                    <div class="input-wrapper">
+                        <i class="fas fa-briefcase"></i>
+                        <select id="rol-registro" name="rol" required>
+                            <option value="" disabled selected>Selecciona tu rol</option>
+                            <option value="empleado">Empleado</option>
+                            <option value="tecnico">Técnico</option>
+                            <option value="administrador">Administrador</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="input-group">
                     <label for="new-password">Contraseña</label>
                     <div class="input-wrapper">
                         <i class="fas fa-lock"></i>
-                        <input type="password" id="new-password" name="new-password" placeholder="Mínimo 8 caracteres" required>
+                        <input type="password" id="new-password" name="new-password" placeholder="Mínimo 8 caracteres"
+                            required>
                     </div>
                 </div>
 
@@ -45,7 +62,8 @@
                     <label for="confirm-password">Confirmar Contraseña</label>
                     <div class="input-wrapper">
                         <i class="fas fa-lock"></i>
-                        <input type="password" id="confirm-password" name="confirm-password" placeholder="Repite tu contraseña" required>
+                        <input type="password" id="confirm-password" name="confirm-password"
+                            placeholder="Repite tu contraseña" required>
                     </div>
                 </div>
 
@@ -57,5 +75,7 @@
             </div>
         </section>
     </main>
+    <script src="../js/main.js"></script>
 </body>
+
 </html>
