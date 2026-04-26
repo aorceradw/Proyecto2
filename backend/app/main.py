@@ -1,16 +1,17 @@
-from fastapi import FastAPI, Depends, Query
+from fastapi import FastAPI, Depends, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
-from . import models, database
-from .database import engine
+from typing import Optional
+from pydantic import BaseModel
+from . import models
+from .database import engine, get_db
 
-# Crea las tablas en la base de datos al arrancar el servidor
+# Crea las tablas en la BD si no existen
 models.Base.metadata.create_all(bind=engine)
 
 app = FastAPI(title="API Gestión de Incidencias")
 
-# Configuración CORS: permite que el frontend (aunque esté en otro puerto)
-# pueda hacer peticiones a esta API sin ser bloqueado por el navegador
+# CORS: permite que el frontend llame a la API desde el navegador
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -19,48 +20,101 @@ app.add_middleware(
 )
 
 
-@app.get("/")
-def root():
-    """Endpoint raíz para comprobar que la API está viva."""
-    return {"status": "ok", "mensaje": "API de Incidencias funcionando"}
+# ── Schema Pydantic para validar el body del POST ────────────────────────────
+class IncidenciaCreate(BaseModel):
+    titulo: str
+    descripcion: Optional[str] = None
+    prioridad: Optional[str] = "media"
+    reportado_por: Optional[str] = None
 
 
-@app.get("/health")
-def health():
-    """Endpoint de salud, útil para que Docker o AWS comprueben que el servicio responde."""
-    return {"status": "healthy"}
-
-
+# ── GET /incidencias — Listar con filtros opcionales ────────────────────────
 @app.get("/incidencias")
-def leer_incidencias(
-    estado: str = Query(None),       # Filtro opcional por estado
-    prioridad: str = Query(None),    # Filtro opcional por prioridad
-    db: Session = Depends(database.get_db)
+def get_incidencias(
+    estado:    Optional[str] = Query(None, description="Filtrar por estado: abierta / cerrada"),
+    prioridad: Optional[str] = Query(None, description="Filtrar por prioridad: alta / media / baja"),
+    db: Session = Depends(get_db)
 ):
-    """Devuelve todas las incidencias. Se puede filtrar por estado y/o prioridad."""
+    """
+    Devuelve todas las incidencias.
+    Se puede filtrar con ?estado=abierta y/o ?prioridad=alta
+    """
     query = db.query(models.Incidencia)
 
-    # Solo aplica el filtro si el parámetro fue enviado en la petición
     if estado:
         query = query.filter(models.Incidencia.estado == estado)
     if prioridad:
         query = query.filter(models.Incidencia.prioridad == prioridad)
 
-    return {"status": "success", "data": query.all()}
+    incidencias = query.all()
+
+    # Devuelve formato { status, data: [...] } para que el JS lo maneje
+    return {
+        "status": "success",
+        "data": [
+            {
+                "id":           i.id,
+                "titulo":       i.titulo,
+                "descripcion":  i.descripcion,
+                "prioridad":    i.prioridad,
+                "estado":       i.estado,
+                "reportado_por": i.reportado_por,
+            }
+            for i in incidencias
+        ]
+    }
 
 
-@app.get("/incidencias/{id}")
-def leer_incidencia(id: int, db: Session = Depends(database.get_db)):
-    """Devuelve una incidencia concreta buscándola por su ID."""
-    incidencia = db.query(models.Incidencia).filter(models.Incidencia.id == id).first()
-    return incidencia
+# ── GET /incidencias/{id} — Obtener una incidencia por ID ───────────────────
+@app.get("/incidencias/{incidencia_id}")
+def get_incidencia(incidencia_id: int, db: Session = Depends(get_db)):
+    """Devuelve una incidencia concreta. Lanza 404 si no existe."""
+    item = db.query(models.Incidencia).filter(
+        models.Incidencia.id == incidencia_id
+    ).first()
+
+    if not item:
+        raise HTTPException(status_code=404, detail="Incidencia no encontrada")
+
+    return {
+        "status": "success",
+        "data": {
+            "id":           item.id,
+            "titulo":       item.titulo,
+            "descripcion":  item.descripcion,
+            "prioridad":    item.prioridad,
+            "estado":       item.estado,
+            "reportado_por": item.reportado_por,
+        }
+    }
 
 
-@app.post("/incidencias")
-def crear_incidencia(incidencia: dict, db: Session = Depends(database.get_db)):
-    """Crea una nueva incidencia a partir de los datos recibidos en el cuerpo de la petición."""
-    nueva = models.Incidencia(**incidencia)  # Desempaqueta el dict como argumentos del modelo
-    db.add(nueva)       # Añade el objeto a la sesión
-    db.commit()         # Guarda los cambios en la base de datos
-    db.refresh(nueva)   # Refresca el objeto para obtener el ID generado por la BD
-    return nueva
+# ── POST /incidencias — Crear una nueva incidencia ───────────────────────────
+@app.post("/incidencias", status_code=201)
+def crear_incidencia(incidencia: IncidenciaCreate, db: Session = Depends(get_db)):
+    """
+    Crea una nueva incidencia.
+    El frontend envía: titulo, descripcion, prioridad, reportado_por
+    """
+    nueva = models.Incidencia(
+        titulo=incidencia.titulo,
+        descripcion=incidencia.descripcion,
+        prioridad=incidencia.prioridad or "media",
+        estado="abierta",           # siempre empieza como abierta
+        reportado_por=incidencia.reportado_por,
+    )
+    db.add(nueva)
+    db.commit()
+    db.refresh(nueva)
+
+    return {
+        "status": "success",
+        "data": {
+            "id":           nueva.id,
+            "titulo":       nueva.titulo,
+            "descripcion":  nueva.descripcion,
+            "prioridad":    nueva.prioridad,
+            "estado":       nueva.estado,
+            "reportado_por": nueva.reportado_por,
+        }
+    }
