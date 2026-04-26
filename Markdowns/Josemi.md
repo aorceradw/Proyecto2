@@ -32,3 +32,37 @@ Desarrollo realizado en una rama independiente (`feature/formulario-incidencias`
 ## Desarrollador
 - Desarrollado por: **Josemi LG**
 - GitHub: **jLinGom**
+
+--------------------------------------------------------------------------------------------------------------------------------------------
+
+# Proyecto de Gestión de Incidencias: Tests Unitarios del Backend
+
+## Descripción de la Tarea
+
+Desarrollo de las pruebas unitarias del backend en **`backend/tests/test_main.py`** y configuración del entorno de tests en **`backend/tests/conftest.py`**. El objetivo es verificar que los endpoints principales de la API responden correctamente, sin necesidad de conexión a la base de datos real (Amazon RDS).
+
+## Cumplimiento de Requisitos
+
+### 1. Configuración del entorno de tests (conftest.py)
+- Se ha creado el archivo `conftest.py` que sustituye la conexión a Amazon RDS por una base de datos **SQLite en memoria** durante la ejecución de los tests.
+- Esto permite ejecutar las pruebas en cualquier máquina sin necesidad de credenciales ni conexión a la nube.
+
+### 2. Test del endpoint raíz
+- Se verifica que `GET /` responde con código **200 OK**.
+- Se comprueba que el cuerpo de la respuesta es exactamente `{"mensaje": "API de Incidencias funcionando"}`.
+
+### 3. Test del listado de incidencias
+- Se verifica que `GET /incidencias` responde con código **200 OK**.
+- Se comprueba que la respuesta es una lista.
+
+### 4. Tests de filtrado por prioridad
+- Se verifica que `GET /incidencias?prioridad=alta` responde con **200 OK** y devuelve una lista.
+- Se verifica que `GET /incidencias?prioridad=media` responde con **200 OK** y devuelve una lista.
+
+## Control de versiones
+
+Desarrollo realizado en una rama independiente (`feature/tests-Josemi`).
+
+## Desarrollador
+- Desarrollado por: **Josemi LG**
+- GitHub: **jLinGom**
