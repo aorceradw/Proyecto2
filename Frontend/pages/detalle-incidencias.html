@@ -15,7 +15,7 @@
     <nav class="navbar">
         <div class="user-tag">
             <i class="fas fa-user-circle"></i>
-            <span>Hola, <strong>ANGELA</strong> (Admin)</span>
+            <span>Hola, <strong id="nombre-usuario">...</strong> (<span id="rol-usuario">...</span>)</span>
         </div>
         <a href="../index.html" class="exit-button">
             <i class="fas fa-sign-out-alt"></i> Salir
@@ -32,22 +32,23 @@
                     </a>
                     <div>
                         <h1>Detalle de Incidencia</h1>
-                        <span class="incident-id">#1024</span>
+                        <!-- El JS rellena el ID -->
+                        <span class="incident-id" id="detalle-id">#...</span>
                     </div>
                 </div>
-                <button class="btn-change-state">
+                <button class="btn-change-state" id="btn-cambiar-estado">
                     <i class="fas fa-sync-alt"></i> Cambiar Estado
                 </button>
             </header>
 
-            <!-- ZONA DE INFORMACIÓN DE LA INCIDENCIA -->
             <section class="incident-info">
                 <div class="info-header">
                     <div class="info-title">
-                        <h2>Error de conexión base de datos (RDS)</h2>
+                        <!-- El JS rellena título y badges -->
+                        <h2 id="detalle-titulo">Cargando...</h2>
                         <div class="info-badges">
-                            <span class="prio-tag high">Alta</span>
-                            <span class="state-tag open">Abierta</span>
+                            <span class="prio-tag mid" id="detalle-prioridad-badge">—</span>
+                            <span class="state-tag open" id="detalle-estado-badge">—</span>
                         </div>
                     </div>
                 </div>
@@ -55,94 +56,45 @@
                 <div class="incident-details-grid">
                     <div class="detail-field">
                         <label>REPORTADO POR</label>
-                        <p>Antonio García</p>
+                        <!-- id="incident-reporter" para que el JS lo encuentre -->
+                        <p id="incident-reporter">—</p>
                     </div>
                     <div class="detail-field">
-                        <label>FECHA DE CREACIÓN</label>
-                        <p>08/04/2026 - 14:30</p>
+                        <label>PRIORIDAD</label>
+                        <p id="incident-priority">—</p>
                     </div>
                     <div class="detail-field">
-                        <label>ÚLTIMA ACTUALIZACIÓN</label>
-                        <p>09/04/2026 - 09:15</p>
+                        <label>ESTADO</label>
+                        <p id="incident-state">—</p>
                     </div>
                     <div class="detail-field">
-                        <label>ASIGNADO A</label>
-                        <p>Equipo de Base de Datos</p>
+                        <label>ID</label>
+                        <p id="incident-id-field">—</p>
                     </div>
                 </div>
 
                 <div class="incident-description">
                     <label>DESCRIPCIÓN</label>
-                    <p>
-                        La aplicación está experimentando fallos intermitentes de conexión con la instancia de RDS
-                        (Aurora MySQL).
-                        Los usuarios reportan errores al intentar acceder a módulos que requieren consultas a bases de
-                        datos.
-                    </p>
+                    <!-- El JS rellena la descripción -->
+                    <p id="detalle-descripcion">Cargando descripción...</p>
                 </div>
             </section>
 
-            <!-- SECCIÓN DE COMENTARIOS -->
+            <!-- SECCIÓN DE COMENTARIOS (estática por ahora) -->
             <section class="comments-section">
                 <h3 class="section-title">
                     <i class="fas fa-comments"></i> Registro de Comentarios
                 </h3>
 
-                <div class="comments-list">
-                    <!-- Comentario 1 -->
-                    <div class="comment">
-                        <div class="comment-header">
-                            <span class="comment-author">Antonio García</span>
-                            <span class="comment-date">08/04/2026 14:30</span>
-                        </div>
-                        <div class="comment-body">
-                            Detectamos que la conexión con la BD está fallando. Se presentan timeouts después de 30
-                            segundos.
-                        </div>
-                    </div>
-
-                    <!-- Comentario 2 -->
-                    <div class="comment">
-                        <div class="comment-header">
-                            <span class="comment-author">Equipo de Base de Datos</span>
-                            <span class="comment-date">08/04/2026 15:45</span>
-                        </div>
-                        <div class="comment-body">
-                            Revisamos los logs de RDS y encontramos que hay un problema con los connection pools.
-                            Aumentamos el límite de conexiones concurrentes a 200.
-                        </div>
-                    </div>
-
-                    <!-- Comentario 3 -->
-                    <div class="comment">
-                        <div class="comment-header">
-                            <span class="comment-author">Antonio García</span>
-                            <span class="comment-date">09/04/2026 09:00</span>
-                        </div>
-                        <div class="comment-body">
-                            Se mantienen los fallos. Probamos con diferentes endpoints y el problema persiste.
-                            Necesitamos revisar la configuración de seguridad en los grupos de seguridad.
-                        </div>
-                    </div>
-
-                    <!-- Comentario 4 -->
-                    <div class="comment">
-                        <div class="comment-header">
-                            <span class="comment-author">Equipo de Base de Datos</span>
-                            <span class="comment-date">09/04/2026 09:15</span>
-                        </div>
-                        <div class="comment-body">
-                            Identificamos un problema en la regla del grupo de seguridad. Añadimos la aplicación a la
-                            whitelist.
-                            Las conexiones están normalizándose. Daremos seguimiento.
-                        </div>
-                    </div>
+                <div class="comments-list" id="lista-comentarios">
+                    <p style="color: #999; text-align: center; padding: 20px;">
+                        No hay comentarios para esta incidencia.
+                    </p>
                 </div>
 
-                <!-- Formulario para agregar comentario -->
                 <div class="add-comment">
-                    <textarea placeholder="Escribe un comentario..."></textarea>
-                    <button class="btn-submit-comment">
+                    <textarea id="nuevo-comentario" placeholder="Escribe un comentario..."></textarea>
+                    <button class="btn-submit-comment" id="btn-comentario">
                         <i class="fas fa-paper-plane"></i> Agregar Comentario
                     </button>
                 </div>
