@@ -13,6 +13,8 @@ from app.main import app
 # Cliente de pruebas
 client = TestClient(app)
 
+def test_root_responde():
+    """Verifica que la API enciende y responde correctamente."""
 # Prueba 1: Verificar que la API está activa
 def test_api_activa():
     """Comprueba que el endpoint raíz devuelve status ok"""
