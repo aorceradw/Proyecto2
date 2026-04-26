@@ -8,4 +8,6 @@ class Incidencia(Base):
     titulo = Column(String(200), nullable=False)
     descripcion = Column(Text)
     prioridad = Column(String(20), default="media")
+    estado = Column(String(20), default="abierta")
+    reportado_por = Column(String(100))
 
