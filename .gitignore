@@ -1,0 +1,19 @@
+# Entorno virtual
+.venv/
+venv/
+__pycache__/
+*.pyc
+*.pyo
+
+# Variables de entorno secretas
+.env
+
+# Base de datos local
+*.db
+
+# Docker
+*.log
+
+# IDEs
+.vscode/
+.idea/
